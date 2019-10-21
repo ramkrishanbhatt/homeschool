@@ -1,48 +1,47 @@
 from flask import Flask
+from flask_restplus import Api,Resource
+from wtforms import Form, TextField, PasswordField, validators,BooleanField
 import sqlite3
 app = Flask(__name__)
-# api = Api(app=app)
+api = Api(app=app)
 ns_conf = api.namespace('homeschools', description='homeschool functions')
 
-
-class TextField():
-    pass
-
-
-@ns_app.route("/")
+@app.route("/")
 class RegistrationForm(Form):
     username = TextField('Username', [validators.Length(min=4, max=20)])
     email = TextField('Email Address', [validators.Length(min=6, max=50)])
     password = PasswordField('New Password', [
-        validators.Required(),
+        validators.required(),
         validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the Terms and services)',
-    [validators.Required()])
+    [validators.required()])
 
-@ns_app.route("/")
+@app.route("/")
 class StudentRegistrationForm(Form):
     studentname = TextField('Studentname',[validators.Length(min=4, max=20)])
     email = TextField('Email Address', [validators.Length(min=6, max=50)])
-    password = passwordField('New Password', [
-        validators.Required(),
+    password = PasswordField('New Password', [
+        validators.required(),
         validators.EqualTo('confirm', message='passwords must match')
     ])
-    confirm = passwordField('Repeat Password')
+    confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the terms and services)',
-    [validators.Required()])
+    [validators.required()])
 
-@ns_app.route("/")
+@app.route("/")
 class Donation(Resource):
     def get(self):
-        db=sqlite3.connect('homeschools.db')
-        sql="SELECT * from student;"
-        cur=db.cursor()
+        db = sqlite3.connect('homeschools.db')
+        sql = "SELECT * from student;"
+        cur = db.cursor()
         cur.execute(sql)
     while True:
-        record=cur.fetchone()
-    if record==None:
+        db = sqlite3.connect()
+        cur = db.cursor()
+        record = cur.fetchone()
+    if record == None:
         pass
     print (record)
     db.close()
@@ -86,7 +85,7 @@ class Donation(Resource):
             db.rollback()
         db.close()
 
-@ns_app.route("/")
+@app.route("/")
 class Classes(Resource):
     def get(self):
         db=sqlite3.connect('homeschools.db')
@@ -94,7 +93,10 @@ class Classes(Resource):
         cur=db.cursor()
         cur.execute(sql)
     while True:
+        db = sqlite3.connect()
+        cur = db.cursor()
         record=cur.fetchall()
+
     if record==None:
         pass
     print (record)
@@ -138,5 +140,8 @@ class Classes(Resource):
             print("error in operation")
             db.rollback()
         db.close()
+
+if __name__ == "__main__":
+    app.run()
 
 
