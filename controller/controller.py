@@ -1,9 +1,8 @@
-from flask import Flask
-from flask_restplus import Api,Resource
-from wtforms import Form, TextField, PasswordField, validators,BooleanField
+from wtforms import validators, TextField, PasswordField, BooleanField, Form
+from app import app,api
 import sqlite3
-app = Flask(__name__)
-api = Api(app=app)
+from flask_restplus import Resource
+
 ns_conf = api.namespace('homeschools', description='homeschool functions')
 
 @app.route("/")
@@ -85,6 +84,8 @@ class Donation(Resource):
             db.rollback()
         db.close()
 
+
+
 @app.route("/")
 class Classes(Resource):
     def get(self):
@@ -135,13 +136,8 @@ class Classes(Resource):
             cur = db.cursor()
             cur.execute(qry, ('Vijay', 6, 'english'))
             db.commit()
-            print ("one record added successfully")
+            print("one record added successfully")
         except:
             print("error in operation")
             db.rollback()
-        db.close()
-
-if __name__ == "__main__":
-    app.run()
-
-
+            db.close()
